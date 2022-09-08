@@ -3,55 +3,58 @@
 #include <windows.h>
 #include <iomanip>
 
-void initialVector(std::vector<double> &dvector) {
+void initialVector(std::vector<double> &dvector) { // инициализация вектора посредством стандартного потока ввода
     std::cout << "Количество элементов вектора: " << std::endl;
-    int size;
-    while (!(std::cin >> size) || (size > 500 || size < 1)){
+    int size; // размер вектора
+    while (!(std::cin >> size) || (size > 10 || size < 1)){ // отработка исключения
         std::cout << "Неверно введен размер вектора!" << std::endl;
-        std::cin.clear();
+        std::cin.clear(); //очистка потока ввода
         fflush(stdin);
     }
     dvector.reserve(size);
     for (int i = 0; i < size; i++) {
-        double value;
-        std::cout << "Введите " << (i + 1) << " элемент вектора(в диапазоне между -10000 и 10000): " << std::endl;
-        while (!(std::cin >> value) || (value > 10000 || value < -10000)){
+        double value;// значение элемента вектора
+        std::cout << "Введите " << (i + 1) << " элемент вектора(в диапазоне между -13 и 13): " << std::endl;
+        while (!(std::cin >> value) || (value > 13 || value < -13)){
             std::cout << "Неверно введено значение вектора!" << std::endl;
             std::cin.clear();
             fflush(stdin);
         }
-        dvector.push_back(value);
+        dvector.push_back(value);// добавление элемента вектора
     }
-    for (int i = 0; i < dvector.size(); i++) {
-        std::cout << dvector.at(i) << " ";
+    for (int i = 0; i < dvector.size(); i++) {// вывод вектора
+        std::cout << std::setw(3) << dvector.at(i) << " ";
     }
     std::cout << "\n" << std::endl;
 }
 
-void randomInitialVector(std::vector<double> &dvector) {
+void randomInitialVector(std::vector<double> &dvector) {// случайная инициализация вектора
     std::cout << "Количество элементов вектора: " << std::endl;
     int size;
-    while (!(std::cin >> size) || (size > 500 || size < 1)){
+    while (!(std::cin >> size) || (size > 10 || size < 1)){
         std::cout << "Неверно введен размер вектора!" << std::endl;
         std::cin.clear();
         fflush(stdin);
     }
     dvector.reserve(size);
+    srand(time(NULL));//предотвращение генерации одинаковых случайных чисел
     for (int i = 0; i < size; i++) {
-        double value = rand() % 20000 - 10000;
+
+        double value = rand() % 26-13;// генератор в диапазоне от -13 до 13
         dvector.push_back(value);
     }
     for (int i = 0; i < dvector.size(); i++) {
-        std::cout << dvector.at(i) << " ";
+        std::cout << std::setw(3) << dvector.at(i) << " ";
     }
     std::cout << "\n" << std::endl;
 }
 
-void intialMatrix(int **matrix, int m, int n) {
+void intialMatrix(int **matrix, int m, int n) {// инициализация матрицы
+    srand(time(NULL));
     for (int i = 0; i < m; i++) {
         matrix[i] = new int[n];
         for (int j = 0; j < n; j++) {
-            matrix[i][j] = rand() % 1000 - 500;
+            matrix[i][j] = rand() % 1000 - 500;// диапазон значений матрицы от -500 до 500
             std::cout << std::setw(4) <<matrix[i][j] << " ";
         }
         std::cout << "\n" << std::endl;
@@ -68,10 +71,10 @@ void solution(int **matrix, std::vector<double> dvector, int n, int m) {
         std::cin.clear();
         fflush(stdin);
     }
-    for (int i = 1; i < r; i++) {
+    for (int i = 1; i < r; i++) {// процедура нахождения результата умножегия
         multiply *= dvector.at(i);
     }
-    if (multiply < 0) {
+    if (multiply < 0) {// если multiply < 0 ищем максимум матрицы, иначе выводим значение multiply
         int max = matrix[1][1];
         for (int i = 0; i < m; i++) {
             for (int j = 0; j < n; j++) {
@@ -92,7 +95,7 @@ int main() {
     SetConsoleOutputCP(1251);
     std::vector<double> dvector;
     int a;
-    std::cout << "1 - создать вектор вручную, 2 - создать вектор рандомно: ";
+    std::cout << "1 - создать вектор вручную, 2 - создать вектор рандомно: ";//в диалоге выбираем способ инициализации вектора
     std::cin >> a;
     if (a == 1) {
         initialVector(dvector);
@@ -100,20 +103,20 @@ int main() {
         randomInitialVector(dvector);
     } else {
         std::cout << "Ошибка!";
-        exit(2);
+        exit(2);//отработка исключения -> выход с кодом ошибки 2
     }
     int m, n;
     std::cout << "Количество столбцов и строк в матрице: ";
-    while (!(std::cin >> m >> n) || (m > 20 ||
-             n > 20 ||m < 1 || n < 1)){
+    while (!(std::cin >> m >> n) || (m > 5 ||
+             n > 5 ||m < 1 || n < 1)){
         std::cout << "Ошибка размеров матрицы!" << std::endl;
         std::cin.clear();
         fflush(stdin);
     }
-    //std::cout << std::endl;
-    int **matrix = new int *[m];
-    intialMatrix(matrix, m, n);
-    solution(matrix, dvector, n, m);
+    int **matrix = new int *[m];            // создаем матрицу, но не удаляем,
+    intialMatrix(matrix, m, n);             // тк не имеет смысла:
+    solution(matrix, dvector, n, m);        // матрица нужна нам до самой последней функции
+                                            // после окончания программы все данные пропадут автоматически
 
     return 0;
 }
